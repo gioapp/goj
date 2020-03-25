@@ -10,103 +10,117 @@ import (
 	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"gioui.org/widget/material"
-	"github.com/gioapp/goj/play"
+	"github.com/gioapp/goj/player"
 	"image"
 	"image/color"
+	"path/filepath"
 )
 
-//
-//var (
-//    win      app.Windower
-//    playlist play.Playlist
-//)
-//
-//func main() {
-//    log.Println(os.Args)
-//    runtime.GOMAXPROCS(1)
-//    if len(os.Args) < 2 {
-//        return
-//    }
-//
-//    // Initialize FFT.
-//    Init()
-//
-//    playlist = play.New()
-//    playlist.Init(os.Args[1:])
-//
-//    go func() {
-//        playlist.Start()
-//    }()
-//
-//    app.OnLaunch = func() {
-//        appMenu := &MenuBar{}
-//
-//        if menuBar, ok := app.MenuBar(); ok {
-//            menuBar.Mount(appMenu)
-//        }
-//
-//        win = newMainWindow()
-//        win.Mount(&Player{})
-//    }
-//
-//    app.OnReopen = func() {
-//        if win != nil {
-//            return
-//        }
-//        win = newMainWindow()
-//        win.Mount(&Player{})
-//    }
-//
-//    app.Run()
-//}
-//
-
-type GoJoy struct {
-	Window   *app.Window
-	Context  *layout.Context
-	Theme    *material.Theme
-	Playlist play.Playlist
-	//Navigation map[string]*theme.DuoUIthemeNav
-	Menu *MenuBar
-}
-
-func NewGoJoy() *GoJoy {
-	gojoy := &GoJoy{
-		Window: app.NewWindow(
-			app.Size(unit.Dp(400), unit.Dp(800)),
-			app.Title("ParallelCoin"),
-		),
-		Theme:    material.NewTheme(),
-		Playlist: play.New(),
-		Menu:     Menu(),
-	}
-	gojoy.Context = layout.NewContext(gojoy.Window.Queue())
-	return gojoy
-}
-
 func main() {
-	gojoy := NewGoJoy()
-
+	gj := player.NewGoJoy()
+	//gj.NewPlayer()
 	go func() {
-
-		for e := range gojoy.Window.Events() {
+		for e := range gj.Window.Events() {
 			if e, ok := e.(system.FrameEvent); ok {
-				gojoy.Context.Reset(e.Config, e.Size)
-				DrawRectangle(gojoy.Context, gojoy.Context.Constraints.Width.Max, gojoy.Context.Constraints.Height.Max, HexARGB("ff303030"), [4]float32{0, 0, 0, 0}, unit.Dp(0))
-
-				layout.Flex{
-					Axis: layout.Vertical,
-				}.Layout(gojoy.Context,
-					layout.Rigid(func() {
-
-						gojoy.Menu.Layout(gojoy.Context, gojoy.Theme, gojoy.Menu)
-					}),
+				gj.Context.Reset(e.Config, e.Size)
+				DrawRectangle(gj.Context, gj.Context.Constraints.Width.Max, gj.Context.Constraints.Height.Max, HexARGB("ff303030"), [4]float32{0, 0, 0, 0}, unit.Dp(0))
+				gj.Layouts.Main.Layout(gj.Context,
 					layout.Flexed(1, func() {
-						cs := gojoy.Context.Constraints
-						DrawRectangle(gojoy.Context, cs.Width.Max, cs.Height.Max, HexARGB("ff303030"), [4]float32{0, 0, 0, 0}, unit.Dp(0))
+						gj.Layouts.Body.Layout(gj.Context,
+							layout.Flexed(0.5, func() {
+								if gj.Player.Playing != nil {
+									gj.Layouts.TrackInfo.Layout(gj.Context,
+										layout.Rigid(func() {
+											layout.Flex{Axis: layout.Vertical}.Layout(gj.Context,
+												layout.Rigid(func() {
+													gj.Theme.H6("Artist: ").Layout(gj.Context)
+												}),
+												layout.Rigid(func() {
+													gj.Theme.H6("Title: ").Layout(gj.Context)
+												}),
+												layout.Rigid(func() {
+													gj.Theme.H6("Album: ").Layout(gj.Context)
+												}),
+												layout.Rigid(func() {
+													gj.Theme.H6("Track: ").Layout(gj.Context)
+												}),
+												layout.Rigid(func() {
+													gj.Theme.H6("Genre: ").Layout(gj.Context)
+												}),
+												layout.Rigid(func() {
+													gj.Theme.H6("Year: ").Layout(gj.Context)
+												}),
+											)
+										}),
+										layout.Flexed(1, func() {
+
+											layout.Flex{Axis: layout.Vertical}.Layout(gj.Context,
+												layout.Rigid(func() {
+													if gj.Player.Playing.Artist != "" {
+														gj.Theme.Body1(gj.Player.Playing.Artist).Layout(gj.Context)
+													}
+												}),
+												layout.Rigid(func() {
+													if gj.Player.Playing.Title != "" {
+														gj.Theme.Body1(gj.Player.Playing.Title).Layout(gj.Context)
+													}
+												}),
+												layout.Rigid(func() {
+													if gj.Player.Playing.Image != nil {
+														i, _ := material.NewIcon(gj.Player.Playing.Image)
+														//sz := gj.Context.Constraints.Width.Min
+														//img := image.NewRGBA(image.Rectangle{Max: image.Point{X: sz, Y: sz}})
+														//draw.ApproxBiLinear.Scale(img, img.Bounds(), img, img.Bounds(), draw.Src, nil)
+														//addrQR := paint.NewImageOp(img)
+														//gj.Theme.Image(addrQR)
+														i.Layout(gj.Context, unit.Dp(50))
+													}
+												}),
+												layout.Rigid(func() {
+													if gj.Player.Playing.Album != "" {
+														gj.Theme.Body1(gj.Player.Playing.Album).Layout(gj.Context)
+													}
+												}),
+												layout.Rigid(func() {
+													if gj.Player.Playing.Track != "" {
+														gj.Theme.Body1(fmt.Sprint(gj.Player.Playing.Track)).Layout(gj.Context)
+													}
+												}),
+												layout.Rigid(func() {
+													if gj.Player.Playing.Genre != "" {
+														gj.Theme.Body1(gj.Player.Playing.Genre).Layout(gj.Context)
+													}
+												}),
+												layout.Rigid(func() {
+													if gj.Player.Playing.Year != "" {
+														gj.Theme.Body1(gj.Player.Playing.Year).Layout(gj.Context)
+													}
+												}),
+											)
+										}),
+									)
+								}
+							}),
+							layout.Flexed(0.5, func() {
+								if gj.Player.Playlist.Tracks != nil {
+									gj.Layouts.Playlist.Layout(gj.Context, len(gj.Player.Playlist.Tracks), func(i int) {
+										track := gj.Player.Playlist.Tracks[i]
+										for gj.Player.Playlist.Buttons[track.Path].Clicked(gj.Context) {
+											gj.Player.Playing = &track
+										}
+										file := filepath.Base(track.Path)
+										b := gj.Theme.Button(file)
+										b.Layout(gj.Context, gj.Player.Playlist.Buttons[track.Path])
+
+										//fmt.Println(song.Path)
+									})
+								}
+							}),
+						)
 					}),
+					layout.Rigid(gj.Menu.Layout(gj.Context, gj.Theme, gj.Layouts.Menu)),
 				)
-				e.Frame(gojoy.Context.Ops)
+				e.Frame(gj.Context.Ops)
 			}
 		}
 	}()
@@ -116,7 +130,7 @@ func main() {
 func DrawRectangle(gtx *layout.Context, w, h int, color color.RGBA, borderRadius [4]float32, inset unit.Value) {
 	in := layout.UniformInset(inset)
 	in.Layout(gtx, func() {
-		//cs := gojoy.Context.Constraints
+		//cs := gj.Context.Constraints
 		square := f32.Rectangle{
 			Max: f32.Point{
 				X: float32(w),
