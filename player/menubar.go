@@ -40,10 +40,29 @@ func (m *MenuBar) Layout(gtx *layout.Context, th *material.Theme, ly *layout.Fle
 	return func() {
 		ly.Layout(gtx,
 			layout.Flexed(0.25, m.menuButton(gtx, th, "Play/Pause", m.PlayPause, func() {
+				//
+				//if m.player.state == Playing {
+				//	m.player.songPos++
+				//	if m.player.songLen != 0 {
+				//		m.player.scrollerGauge.Percent = int(float32(m.player.songPos) / float32(m.player.songLen) * 100)
+				//		m.player.scrollerGauge.Label = fmt.Sprintf("%d:%.2d / %d:%.2d", m.player.songPos/60, m.player.songPos%60, m.player.songLen/60, m.player.songLen%60)
+				//		if m.player.scrollerGauge.Percent >= 100 {
+				//			m.player.songNum++
+				//			if m.player.songNum >= len(m.player.Playlist.Tracks) {
+				//				m.player.songNum = 0
+				//			}
+				//			m.player.playSong(m.player.songNum)
+				//		}
+				//	}
+				//} else if m.player.state == Stopped {
+				//	m.player.songPos = 0
+				//}
 				i, err := playSong(m.player.Playing)
 				if err != nil {
 				}
 				th.Caption(fmt.Sprint(i)).Layout(gtx)
+				fmt.Println(i)
+
 			})),
 			layout.Flexed(0.15, m.menuButton(gtx, th, "Stop", m.Stop, func() {})),
 			layout.Flexed(0.15, m.menuButton(gtx, th, "Backward", m.Backward, func() {})),

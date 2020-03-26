@@ -18,15 +18,15 @@ type seekCallback func(int) error
 type volumeCallback func(int)
 
 type Player struct {
-	Playlist *Playlist
-	Playing  *Track
-	infoList []string
-	//scrollerGauge *termp.GaugeTheme
-	//volumeGauge   *termp.GaugeTheme
+	Playlist      *Playlist
+	Playing       *Track
+	infoList      []string
+	scrollerGauge *scrollerGauge
+	volumeGauge   *scrollerGauge
 	//controlsPar   *termp.ParagraphTheme
 
-	songs     []Track
-	songNames []string
+	//songs     []Track
+	//songNames []string
 
 	volume int
 
@@ -48,6 +48,16 @@ func NewPlayer() *Player {
 
 	p := new(Player)
 	p.Playlist = LoadPlaylist()
+
+	//userInterface, err := NewUi(songs, len(songDir))
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//p.OnSelect = playSong
+	//p.OnPause = pauseSong
+	//p.OnSeek = seek
+	//p.OnVolume = setVolue
+
 	p.volume = 100
 
 	//p.songs = songList
@@ -67,7 +77,7 @@ func NewPlayer() *Player {
 	return p
 }
 
-func (p *Player) PlaySong(number int) {
+func (p *Player) playSong(number int) {
 	p.songPos = 0
 	var err error
 	p.songLen, err = p.OnSelect(p.Playlist.Tracks[number])
@@ -80,15 +90,15 @@ func (p *Player) PlaySong(number int) {
 
 func (p *Player) renderSong() {
 	if p.songSel != -1 {
-		lyrics := p.songs[p.songSel].Metadata["Lyrics"].(string)
-		trackNum, _ := p.songs[p.songSel].Metadata["Track"].(int)
+		lyrics := p.Playlist.Tracks[p.songSel].Metadata["Lyrics"].(string)
+		trackNum, _ := p.Playlist.Tracks[p.songSel].Metadata["Track"].(int)
 		p.infoList = []string{
-			"[Artist:](fg-green) " + p.songs[p.songSel].Metadata["Artist"].(string),
-			"[Title:](fg-green)  " + p.songs[p.songSel].Metadata["Title"].(string),
-			"[Album:](fg-green)  " + p.songs[p.songSel].Metadata["Album"].(string),
+			"[Artist:](fg-green) " + p.Playlist.Tracks[p.songSel].Metadata["Artist"].(string),
+			"[Title:](fg-green)  " + p.Playlist.Tracks[p.songSel].Metadata["Title"].(string),
+			"[Album:](fg-green)  " + p.Playlist.Tracks[p.songSel].Metadata["Album"].(string),
 			fmt.Sprintf("[Track:](fg-green)  %d", trackNum),
-			"[Genre:](fg-green)  " + p.songs[p.songSel].Metadata["Genre"].(string),
-			fmt.Sprintf("[Year:](fg-green)   %d", p.songs[p.songSel].Metadata["Year"].(string)),
+			"[Genre:](fg-green)  " + p.Playlist.Tracks[p.songSel].Metadata["Genre"].(string),
+			fmt.Sprintf("[Year:](fg-green)   %d", p.Playlist.Tracks[p.songSel].Metadata["Year"].(string)),
 		}
 		if lyrics != "" {
 			p.infoList = append(p.infoList, "Lyrics:  "+lyrics)
@@ -115,7 +125,7 @@ func (p *Player) renderStatus() {
 //Song selection
 
 func (p *Player) songDown() {
-	if p.songSel < len(p.songNames)-1 {
+	if p.songSel < len(p.Playlist.Tracks)-1 {
 		p.setSong(p.songSel+1, true)
 	}
 }
@@ -150,7 +160,7 @@ func (p *Player) setSong(num int, unset bool) {
 	//	skip += p.playList.Height - 2
 	//}
 	if unset {
-		p.songNames[p.songSel] = p.songNames[p.songSel][1 : len(p.songNames[p.songSel])-20]
+		//p.Playlist.Tracks[p.songSel] = p.songNames[p.songSel][1 : len(p.songNames[p.songSel])-20]
 	}
 	p.songSel = num
 	//p.songNames[num] = fmt.Sprintf("[%s](fg-black,bg-green)", p.songNames[num])

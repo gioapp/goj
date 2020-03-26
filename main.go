@@ -13,7 +13,6 @@ import (
 	"github.com/gioapp/goj/player"
 	"image"
 	"image/color"
-	"path/filepath"
 )
 
 func main() {
@@ -32,6 +31,9 @@ func main() {
 									gj.Layouts.TrackInfo.Layout(gj.Context,
 										layout.Rigid(func() {
 											layout.Flex{Axis: layout.Vertical}.Layout(gj.Context,
+												layout.Rigid(func() {
+													gj.Theme.H5("Filename: ").Layout(gj.Context)
+												}),
 												layout.Rigid(func() {
 													gj.Theme.H6("Artist: ").Layout(gj.Context)
 												}),
@@ -55,6 +57,9 @@ func main() {
 										layout.Flexed(1, func() {
 
 											layout.Flex{Axis: layout.Vertical}.Layout(gj.Context,
+												layout.Rigid(func() {
+													gj.Theme.Body1(gj.Player.Playing.Filename).Layout(gj.Context)
+												}),
 												layout.Rigid(func() {
 													if gj.Player.Playing.Artist != "" {
 														gj.Theme.Body1(gj.Player.Playing.Artist).Layout(gj.Context)
@@ -83,7 +88,7 @@ func main() {
 												}),
 												layout.Rigid(func() {
 													if gj.Player.Playing.Track != "" {
-														gj.Theme.Body1(fmt.Sprint(gj.Player.Playing.Track)).Layout(gj.Context)
+														gj.Theme.Body1(gj.Player.Playing.Track).Layout(gj.Context)
 													}
 												}),
 												layout.Rigid(func() {
@@ -105,12 +110,12 @@ func main() {
 								if gj.Player.Playlist.Tracks != nil {
 									gj.Layouts.Playlist.Layout(gj.Context, len(gj.Player.Playlist.Tracks), func(i int) {
 										track := gj.Player.Playlist.Tracks[i]
-										for gj.Player.Playlist.Buttons[track.Path].Clicked(gj.Context) {
+										for gj.Player.Playlist.Buttons[track.Id].Clicked(gj.Context) {
 											gj.Player.Playing = &track
 										}
-										file := filepath.Base(track.Path)
-										b := gj.Theme.Button(file)
-										b.Layout(gj.Context, gj.Player.Playlist.Buttons[track.Path])
+
+										b := gj.Theme.Button(track.Filename)
+										b.Layout(gj.Context, gj.Player.Playlist.Buttons[track.Id])
 
 										//fmt.Println(song.Path)
 									})

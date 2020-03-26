@@ -6,6 +6,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 func LoadPlaylist() *Playlist {
@@ -23,10 +24,10 @@ func LoadPlaylist() *Playlist {
 	if err != nil {
 		log.Fatal("Can't get song list")
 	}
-	tracks := make([]Track, 0, len(fileList))
-	buttons := make(map[string]*widget.Button)
+	tracks := make(map[int]Track)
+	buttons := make(map[int]*widget.Button)
 
-	for _, fileName := range fileList {
+	for trackNum, fileName := range fileList {
 		currentFile, err := os.Open(fileName)
 		if err == nil {
 			metadata, _ := tag.ReadFrom(currentFile)
@@ -36,9 +37,12 @@ func LoadPlaylist() *Playlist {
 				//Path:metadata.Raw()[""].(string),
 				Path: fileName,
 			}
+			track.Id = trackNum
 			if metadata != nil {
 				track.Metadata = metadata.Raw()
 			}
+
+			track.Filename = filepath.Base(track.Path)
 
 			if track.Metadata["TPE1"] != nil {
 				track.Artist = track.Metadata["TPE1"].(string)
@@ -59,8 +63,8 @@ func LoadPlaylist() *Playlist {
 				track.Year = track.Metadata["TYER"].(string)
 			}
 
-			tracks = append(tracks, track)
-			buttons[fileName] = new(widget.Button)
+			tracks[track.Id] = track
+			buttons[track.Id] = new(widget.Button)
 		}
 		currentFile.Close()
 	}
@@ -72,12 +76,4 @@ func LoadPlaylist() *Playlist {
 		Buttons: buttons,
 		Tracks:  tracks,
 	}
-	//userInterface, err := NewUi(songs, len(songDir))
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//userInterface.OnSelect = playSong
-	//userInterface.OnPause = pauseSong
-	//userInterface.OnSeek = seek
-	//userInterface.OnVolume = setVolue
 }

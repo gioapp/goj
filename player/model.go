@@ -17,8 +17,8 @@ type GoJoy struct {
 	Layouts *Layouts
 }
 type Playlist struct {
-	Buttons map[string]*widget.Button
-	Tracks  []Track
+	Buttons map[int]*widget.Button
+	Tracks  map[int]Track
 }
 type Layouts struct {
 	Main      *layout.Flex
@@ -31,6 +31,8 @@ type Layouts struct {
 
 type Track struct {
 	Metadata map[string]interface{}
+	Id       int
+	Filename string
 	Artist   string
 	Title    string
 	Album    string
@@ -39,4 +41,9 @@ type Track struct {
 	Year     string
 	Image    []byte
 	Path     string
+}
+
+type scrollerGauge struct {
+	Label   string
+	Percent int
 }
