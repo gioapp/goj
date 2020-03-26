@@ -1,6 +1,7 @@
 package player
 
 import (
+	"fmt"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/flac"
@@ -25,7 +26,7 @@ func playSong(input *Track) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
+	fmt.Println("fsfs", input)
 	switch fileExt := filepath.Ext(input.Path); fileExt {
 	case ".mp3":
 		s, format, err = mp3.Decode(f)

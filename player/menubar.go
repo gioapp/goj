@@ -1,6 +1,7 @@
 package player
 
 import (
+	"fmt"
 	"gioui.org/layout"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
@@ -19,9 +20,10 @@ type MenuBar struct {
 	Next      *widget.Button
 	Back      *widget.Button
 	Quit      *widget.Button
+	player    *Player
 }
 
-func Menu() *MenuBar {
+func (p *Player) Menu() *MenuBar {
 	return &MenuBar{
 		PlayPause: new(widget.Button),
 		Stop:      new(widget.Button),
@@ -30,13 +32,19 @@ func Menu() *MenuBar {
 		Next:      new(widget.Button),
 		Back:      new(widget.Button),
 		Quit:      new(widget.Button),
+		player:    p,
 	}
 }
 
 func (m *MenuBar) Layout(gtx *layout.Context, th *material.Theme, ly *layout.Flex) func() {
 	return func() {
 		ly.Layout(gtx,
-			layout.Flexed(0.25, m.menuButton(gtx, th, "Play/Pause", m.PlayPause, func() {})),
+			layout.Flexed(0.25, m.menuButton(gtx, th, "Play/Pause", m.PlayPause, func() {
+				i, err := playSong(m.player.Playing)
+				if err != nil {
+				}
+				th.Caption(fmt.Sprint(i)).Layout(gtx)
+			})),
 			layout.Flexed(0.15, m.menuButton(gtx, th, "Stop", m.Stop, func() {})),
 			layout.Flexed(0.15, m.menuButton(gtx, th, "Backward", m.Backward, func() {})),
 			layout.Flexed(0.15, m.menuButton(gtx, th, "Forward", m.Forward, func() {})),
@@ -52,7 +60,7 @@ func (m *MenuBar) Layout(gtx *layout.Context, th *material.Theme, ly *layout.Fle
 
 func (m *MenuBar) menuButton(gtx *layout.Context, th *material.Theme, label string, button *widget.Button, action func()) func() {
 	return func() {
-		for m.Quit.Clicked(gtx) {
+		for button.Clicked(gtx) {
 			action()
 		}
 		b := th.Button(label)

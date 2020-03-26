@@ -46,10 +46,10 @@ func NewGoJoy() *GoJoy {
 		Theme: material.NewTheme(),
 		//Playlist: play.New(),
 		Layouts: layouts,
-		Menu:    Menu(),
 		Player:  NewPlayer(),
 	}
 	gojoy.Context = layout.NewContext(gojoy.Window.Queue())
+	gojoy.Menu = gojoy.Player.Menu()
 	//p, _ := NewPlayer(gojoy.Player.Playlist.Tracks, 0)
 	//fmt.Println("tet",p)
 	//gojoy.Player = p

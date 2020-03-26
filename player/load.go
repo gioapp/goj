@@ -1,7 +1,6 @@
 package player
 
 import (
-	"fmt"
 	"gioui.org/widget"
 	"github.com/dhowden/tag"
 	"github.com/mitchellh/go-homedir"
@@ -31,7 +30,6 @@ func LoadPlaylist() *Playlist {
 		currentFile, err := os.Open(fileName)
 		if err == nil {
 			metadata, _ := tag.ReadFrom(currentFile)
-			fmt.Println("meta:", metadata)
 			track := Track{
 				Metadata: make(map[string]interface{}),
 				//Image:metadata.Raw()[""].(string),
