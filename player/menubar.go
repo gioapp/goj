@@ -20,10 +20,9 @@ type MenuBar struct {
 	Next      *widget.Button
 	Back      *widget.Button
 	Quit      *widget.Button
-	player    *Player
 }
 
-func (p *Player) Menu() *MenuBar {
+func (g *GoJoy) MenuBar() *MenuBar {
 	return &MenuBar{
 		PlayPause: new(widget.Button),
 		Stop:      new(widget.Button),
@@ -32,14 +31,13 @@ func (p *Player) Menu() *MenuBar {
 		Next:      new(widget.Button),
 		Back:      new(widget.Button),
 		Quit:      new(widget.Button),
-		player:    p,
 	}
 }
 
-func (m *MenuBar) Layout(gtx *layout.Context, th *material.Theme, ly *layout.Flex) func() {
+func (g *GoJoy) MenuBarLayout(gtx *layout.Context, th *material.Theme, ly *layout.Flex) func() {
 	return func() {
 		ly.Layout(gtx,
-			layout.Flexed(0.25, m.menuButton(gtx, th, "Play/Pause", m.PlayPause, func() {
+			layout.Flexed(0.25, g.Menu.menuButton(gtx, th, "Play/Pause", g.Menu.PlayPause, func() {
 				//
 				//if m.player.state == Playing {
 				//	m.player.songPos++
@@ -57,18 +55,19 @@ func (m *MenuBar) Layout(gtx *layout.Context, th *material.Theme, ly *layout.Fle
 				//} else if m.player.state == Stopped {
 				//	m.player.songPos = 0
 				//}
-				i, err := playSong(m.player.Playing)
+				i, err := playSong(g.Playing)
 				if err != nil {
 				}
+				g.seek.Value = i
 				th.Caption(fmt.Sprint(i)).Layout(gtx)
-				fmt.Println(i)
+				fmt.Println("addad", i)
 
 			})),
-			layout.Flexed(0.15, m.menuButton(gtx, th, "Stop", m.Stop, func() {})),
-			layout.Flexed(0.15, m.menuButton(gtx, th, "Backward", m.Backward, func() {})),
-			layout.Flexed(0.15, m.menuButton(gtx, th, "Forward", m.Forward, func() {})),
-			layout.Flexed(0.15, m.menuButton(gtx, th, "Back", m.Back, func() {})),
-			layout.Flexed(0.15, m.menuButton(gtx, th, "Next", m.Next, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Stop", g.Menu.Stop, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Backward", g.Menu.Backward, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Forward", g.Menu.Forward, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Back", g.Menu.Back, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Next", g.Menu.Next, func() {})),
 		)
 		//iconPlay, _ := material.NewIcon(icons.AVPlayArrow)
 		//iconStop, _ := material.NewIcon(icons.AVStop)
@@ -83,6 +82,7 @@ func (m *MenuBar) menuButton(gtx *layout.Context, th *material.Theme, label stri
 			action()
 		}
 		b := th.Button(label)
+
 		b.Layout(gtx, button)
 	}
 }

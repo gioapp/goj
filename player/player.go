@@ -17,100 +17,40 @@ type pauseCallback func(bool)
 type seekCallback func(int) error
 type volumeCallback func(int)
 
-type Player struct {
-	Playlist      *Playlist
-	Playing       *Track
-	infoList      []string
-	scrollerGauge *scrollerGauge
-	volumeGauge   *scrollerGauge
-	//controlsPar   *termp.ParagraphTheme
-
-	//songs     []Track
-	//songNames []string
-
-	volume int
-
-	songNum int
-
-	songSel int
-	songPos int
-	songLen int
-
-	OnSelect selectCallback
-	OnPause  pauseCallback
-	OnSeek   seekCallback
-	OnVolume volumeCallback
-
-	state playerState
-}
-
-func NewPlayer() *Player {
-
-	p := new(Player)
-	p.Playlist = LoadPlaylist()
-
-	//userInterface, err := NewUi(songs, len(songDir))
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//p.OnSelect = playSong
-	//p.OnPause = pauseSong
-	//p.OnSeek = seek
-	//p.OnVolume = setVolue
-
-	p.volume = 100
-
-	//p.songs = songList
-	p.songNum = -1
-
-	//p.songNames = make([]string, len(p.songs))
-	//for i, v := range p.songs {
-	//	if v.Metadata != nil {
-	//		p.songNames[i] = fmt.Sprintf("[%d] %s - %s", i+1, v.Metadata["Artist"].(string), v.Metadata["Title"].(string))
-	//	} else {
-	//		p.songNames[i] = fmt.Sprintf("[%d] %s", i+1, v.Path[pathPrefix:])
-	//	}
-	//}
-	//p.Playlist.Tracks = p.songNames
-	p.setSong(0, false)
-
-	return p
-}
-
-func (p *Player) playSong(number int) {
-	p.songPos = 0
+func (g *GoJoy) playSong(number int) {
+	g.seek.Value = 0
 	var err error
-	p.songLen, err = p.OnSelect(p.Playlist.Tracks[number])
+	g.songLen, err = g.OnSelect(g.Playlist.Tracks[number])
 	if err == nil {
-		p.state = Playing
-		p.renderSong()
-		p.renderStatus()
+		g.state = Playing
+		g.renderSong()
+		g.renderStatus()
 	}
 }
 
-func (p *Player) renderSong() {
-	if p.songSel != -1 {
-		lyrics := p.Playlist.Tracks[p.songSel].Metadata["Lyrics"].(string)
-		trackNum, _ := p.Playlist.Tracks[p.songSel].Metadata["Track"].(int)
-		p.infoList = []string{
-			"[Artist:](fg-green) " + p.Playlist.Tracks[p.songSel].Metadata["Artist"].(string),
-			"[Title:](fg-green)  " + p.Playlist.Tracks[p.songSel].Metadata["Title"].(string),
-			"[Album:](fg-green)  " + p.Playlist.Tracks[p.songSel].Metadata["Album"].(string),
+func (g *GoJoy) renderSong() {
+	if g.songSel != -1 {
+		lyrics := g.Playlist.Tracks[g.songSel].Metadata["Lyrics"].(string)
+		trackNum, _ := g.Playlist.Tracks[g.songSel].Metadata["Track"].(int)
+		g.infoList = []string{
+			"[Artist:](fg-green) " + g.Playlist.Tracks[g.songSel].Metadata["Artist"].(string),
+			"[Title:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Title"].(string),
+			"[Album:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Album"].(string),
 			fmt.Sprintf("[Track:](fg-green)  %d", trackNum),
-			"[Genre:](fg-green)  " + p.Playlist.Tracks[p.songSel].Metadata["Genre"].(string),
-			fmt.Sprintf("[Year:](fg-green)   %d", p.Playlist.Tracks[p.songSel].Metadata["Year"].(string)),
+			"[Genre:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Genre"].(string),
+			fmt.Sprintf("[Year:](fg-green)   %d", g.Playlist.Tracks[g.songSel].Metadata["Year"].(string)),
 		}
 		if lyrics != "" {
-			p.infoList = append(p.infoList, "Lyrics:  "+lyrics)
+			g.infoList = append(g.infoList, "Lyrics:  "+lyrics)
 		}
 	} else {
-		p.infoList = []string{}
+		g.infoList = []string{}
 	}
 }
 
-func (p *Player) renderStatus() {
+func (g *GoJoy) renderStatus() {
 	//var status string
-	//switch p.state {
+	//switch g.state {
 	//case Playing:
 	//	status = "[(Playing)](fg-black,bg-green)"
 	//case Paused:
@@ -118,51 +58,51 @@ func (p *Player) renderStatus() {
 	//case Stopped:
 	//	status = "[(Stopped)](fg-black,bg-red)"
 	//}
-	//p.scrollerGauge.BorderLabel = status
+	//g.scrollerGauge.BorderLabel = status
 
 }
 
 //Song selection
 
-func (p *Player) songDown() {
-	if p.songSel < len(p.Playlist.Tracks)-1 {
-		p.setSong(p.songSel+1, true)
+func (g *GoJoy) songDown() {
+	if g.songSel < len(g.Playlist.Tracks)-1 {
+		g.setSong(g.songSel+1, true)
 	}
 }
 
-func (p *Player) songUp() {
-	if p.songSel > 0 {
-		p.setSong(p.songSel-1, true)
+func (g *GoJoy) songUp() {
+	if g.songSel > 0 {
+		g.setSong(g.songSel-1, true)
 	}
 }
 
-func (p *Player) volumeUp() {
-	if p.volume < 100 {
-		p.volume += 5
+func (g *GoJoy) volumeUp() {
+	if g.volume.Value < 100 {
+		g.volume.Value += 5
 	}
-	//p.volumeGauge.Percent = p.volume
-	p.OnVolume(p.volume)
+	//g.volumeGauge.Percent = g.volume
+	g.OnVolume(g.volume.Value)
 
 }
 
-func (p *Player) volumeDown() {
-	if p.volume > 0 {
-		p.volume -= 5
+func (g *GoJoy) volumeDown() {
+	if g.volume.Value > 0 {
+		g.volume.Value -= 5
 	}
-	//p.volumeGauge.Percent = p.volume
-	p.OnVolume(p.volume)
+	//g.volumeGauge.Percent = g.volume
+	g.OnVolume(g.volume.Value)
 
 }
 
-func (p *Player) setSong(num int, unset bool) {
+func (g *GoJoy) setSong(num int, unset bool) {
 	//skip := 0
-	//for num-skip >= p.playList.Height-2 {
-	//	skip += p.playList.Height - 2
+	//for num-skip >= g.playList.Height-2 {
+	//	skip += g.playList.Height - 2
 	//}
 	if unset {
-		//p.Playlist.Tracks[p.songSel] = p.songNames[p.songSel][1 : len(p.songNames[p.songSel])-20]
+		//g.Playlist.Tracks[g.songSel] = g.songNames[g.songSel][1 : len(g.songNames[g.songSel])-20]
 	}
-	p.songSel = num
-	//p.songNames[num] = fmt.Sprintf("[%s](fg-black,bg-green)", p.songNames[num])
-	//p.Playlist.Tracks = p.songNames[skip:]
+	g.songSel = num
+	//g.songNames[num] = fmt.Sprintf("[%s](fg-black,bg-green)", g.songNames[num])
+	//g.Playlist.Tracks = g.songNames[skip:]
 }

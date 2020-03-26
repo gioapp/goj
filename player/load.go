@@ -1,6 +1,7 @@
 package player
 
 import (
+	"fmt"
 	"gioui.org/widget"
 	"github.com/dhowden/tag"
 	"github.com/mitchellh/go-homedir"
@@ -44,6 +45,19 @@ func LoadPlaylist() *Playlist {
 
 			track.Filename = filepath.Base(track.Path)
 
+			if track.Metadata["APIC"] != nil {
+				img := track.Metadata["APIC"].(*tag.Picture)
+
+				//buf := new(bytes.Buffer)
+				//err := jpeg.Encode(buf, img.String(), nil)
+				//if err != nil{}
+				//send_s3 := buf.Bytes()
+
+				//i, _, _ := image.Decode(bytes.NewReader(buf.Bytes()))
+				//track.Image = i
+				fmt.Println("tete", img.String())
+
+			}
 			if track.Metadata["TPE1"] != nil {
 				track.Artist = track.Metadata["TPE1"].(string)
 			}

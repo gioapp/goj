@@ -50,11 +50,11 @@ func pauseSong(state bool) {
 	speaker.Unlock()
 }
 
-func seek(pos int) error {
+func seek(pos int) {
 	speaker.Lock()
-	err := s.Seek(pos * int(format.SampleRate))
+	_ = s.Seek(pos * int(format.SampleRate))
 	speaker.Unlock()
-	return err
+	//return err
 }
 
 func setVolue(percent int) {
