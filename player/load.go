@@ -1,10 +1,11 @@
 package player
 
 import (
-	"fmt"
+	"bytes"
 	"gioui.org/widget"
-	"github.com/dhowden/tag"
+	"github.com/bogem/id3v2"
 	"github.com/mitchellh/go-homedir"
+	"image/jpeg"
 	"log"
 	"os"
 	"path/filepath"
@@ -31,51 +32,37 @@ func LoadPlaylist() *Playlist {
 	for trackNum, fileName := range fileList {
 		currentFile, err := os.Open(fileName)
 		if err == nil {
-			metadata, _ := tag.ReadFrom(currentFile)
+			metadata, err := id3v2.ParseReader(currentFile, id3v2.Options{Parse: true})
+			if err != nil {
+			}
 			track := Track{
-				Metadata: make(map[string]interface{}),
+				//Metadata: make(map[string]interface{}),
 				//Image:metadata.Raw()[""].(string),
 				//Path:metadata.Raw()[""].(string),
 				Path: fileName,
 			}
 			track.Id = trackNum
 			if metadata != nil {
-				track.Metadata = metadata.Raw()
+				//track.Metadata = metadata.Raw()
 			}
-
 			track.Filename = filepath.Base(track.Path)
-
-			if track.Metadata["APIC"] != nil {
-				img := track.Metadata["APIC"].(*tag.Picture)
-
-				//buf := new(bytes.Buffer)
-				//err := jpeg.Encode(buf, img.String(), nil)
-				//if err != nil{}
-				//send_s3 := buf.Bytes()
-
-				//i, _, _ := image.Decode(bytes.NewReader(buf.Bytes()))
-				//track.Image = i
-				fmt.Println("tete", img.String())
-
+			pictures := metadata.GetFrames(metadata.CommonID("Attached picture"))
+			for _, f := range pictures {
+				pic, ok := f.(id3v2.PictureFrame)
+				if !ok {
+					log.Fatal("Couldn't assert picture frame")
+				}
+				loadedImage, err := jpeg.Decode(bytes.NewReader(pic.Picture))
+				if err != nil {
+					// Handle error
+				}
+				track.Image = loadedImage
 			}
-			if track.Metadata["TPE1"] != nil {
-				track.Artist = track.Metadata["TPE1"].(string)
-			}
-			if track.Metadata["TIT2"] != nil {
-				track.Title = track.Metadata["TIT2"].(string)
-			}
-			if track.Metadata["TALB"] != nil {
-				track.Album = track.Metadata["TALB"].(string)
-			}
-			if track.Metadata["TRCK"] != nil {
-				track.Track = track.Metadata["TRCK"].(string)
-			}
-			if track.Metadata["TCON"] != nil {
-				track.Genre = track.Metadata["TCON"].(string)
-			}
-			if track.Metadata["TYER"] != nil {
-				track.Year = track.Metadata["TYER"].(string)
-			}
+			track.Artist = metadata.Artist()
+			track.Title = metadata.Title()
+			track.Album = metadata.Album()
+			track.Genre = metadata.Genre()
+			track.Year = metadata.Year()
 
 			tracks[track.Id] = track
 			buttons[track.Id] = new(widget.Button)

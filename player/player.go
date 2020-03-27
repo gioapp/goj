@@ -1,9 +1,5 @@
 package player
 
-import (
-	"fmt"
-)
-
 type playerState int
 
 const (
@@ -30,19 +26,19 @@ func (g *GoJoy) playSong(number int) {
 
 func (g *GoJoy) renderSong() {
 	if g.songSel != -1 {
-		lyrics := g.Playlist.Tracks[g.songSel].Metadata["Lyrics"].(string)
-		trackNum, _ := g.Playlist.Tracks[g.songSel].Metadata["Track"].(int)
-		g.infoList = []string{
-			"[Artist:](fg-green) " + g.Playlist.Tracks[g.songSel].Metadata["Artist"].(string),
-			"[Title:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Title"].(string),
-			"[Album:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Album"].(string),
-			fmt.Sprintf("[Track:](fg-green)  %d", trackNum),
-			"[Genre:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Genre"].(string),
-			fmt.Sprintf("[Year:](fg-green)   %d", g.Playlist.Tracks[g.songSel].Metadata["Year"].(string)),
-		}
-		if lyrics != "" {
-			g.infoList = append(g.infoList, "Lyrics:  "+lyrics)
-		}
+		//lyrics := g.Playlist.Tracks[g.songSel].Metadata["Lyrics"].(string)
+		//trackNum, _ := g.Playlist.Tracks[g.songSel].Metadata["Track"].(int)
+		//g.infoList = []string{
+		//	"[Artist:](fg-green) " + g.Playlist.Tracks[g.songSel].Metadata["Artist"].(string),
+		//	"[Title:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Title"].(string),
+		//	"[Album:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Album"].(string),
+		//	fmt.Sprintf("[Track:](fg-green)  %d", trackNum),
+		//	"[Genre:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Genre"].(string),
+		//	fmt.Sprintf("[Year:](fg-green)   %d", g.Playlist.Tracks[g.songSel].Metadata["Year"].(string)),
+		//}
+		//if lyrics != "" {
+		//	g.infoList = append(g.infoList, "Lyrics:  "+lyrics)
+		//}
 	} else {
 		g.infoList = []string{}
 	}

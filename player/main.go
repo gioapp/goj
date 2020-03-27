@@ -81,8 +81,8 @@ func (g *GoJoy) View() func() {
 											}
 										}),
 										layout.Rigid(func() {
-											if g.Playing.Track != "" {
-												g.Theme.Body1(g.Playing.Track).Layout(g.Context)
+											if g.Playing.TrackNumber != 0 {
+												g.Theme.Body1(fmt.Sprint(g.Playing.TrackNumber)).Layout(g.Context)
 											}
 										}),
 										layout.Rigid(func() {
@@ -92,7 +92,7 @@ func (g *GoJoy) View() func() {
 										}),
 										layout.Rigid(func() {
 											if g.Playing.Year != "" {
-												g.Theme.Body1(g.Playing.Year).Layout(g.Context)
+												g.Theme.Body1(fmt.Sprint(g.Playing.Year)).Layout(g.Context)
 											}
 										}),
 									)

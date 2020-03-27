@@ -49,16 +49,16 @@ type Layouts struct {
 }
 
 type Track struct {
-	Metadata map[string]interface{}
-	Id       int
-	Filename string
-	Artist   string
-	Title    string
-	Album    string
-	Track    string
-	Genre    string
-	Year     string
-	Image    image.Image
-	imgOp    paint.ImageOp
-	Path     string
+	Id          int
+	Filename    string
+	Artist      string
+	Title       string
+	Album       string
+	TrackNumber int
+	TrackTotal  int
+	Genre       string
+	Year        string
+	Image       image.Image
+	imgOp       paint.ImageOp
+	Path        string
 }
