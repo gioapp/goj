@@ -63,14 +63,14 @@ func (g *GoJoy) View() func() {
 											}
 										}),
 										layout.Rigid(func() {
-											if g.Playing.Image != nil {
+											if g.Playing.CoverImage != nil {
 												sz := g.Context.Constraints.Width.Min
-												if g.Playing.imgOp.Size().X != sz {
+												if g.Playing.CoverImageOp.Size().X != sz {
 													img := image.NewRGBA(image.Rectangle{Max: image.Point{X: sz, Y: sz}})
-													draw.ApproxBiLinear.Scale(img, img.Bounds(), g.Playing.Image, g.Playing.Image.Bounds(), draw.Src, nil)
-													g.Playing.imgOp = paint.NewImageOp(img)
+													draw.ApproxBiLinear.Scale(img, img.Bounds(), g.Playing.CoverImage, g.Playing.CoverImage.Bounds(), draw.Src, nil)
+													g.Playing.CoverImageOp = paint.NewImageOp(img)
 												}
-												img := g.Theme.Image(g.Playing.imgOp)
+												img := g.Theme.Image(g.Playing.CoverImageOp)
 												img.Scale = float32(sz) / float32(g.Context.Px(unit.Dp(float32(sz))))
 												img.Layout(g.Context)
 											}

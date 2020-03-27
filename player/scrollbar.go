@@ -42,7 +42,6 @@ type ScrollBarBody struct {
 	OperateValue interface{}
 	Width        int
 	CursorHeight float32
-	Icon         material.Icon
 }
 
 type ScrollerGaugeButton struct {
@@ -61,7 +60,6 @@ type ScrollerGaugeButton struct {
 }
 
 func (g *GoJoy) scrollerGauge(control func(i int)) *ScrollerGauge {
-	iconGrab, _ := material.NewIcon(icons.NavigationMenu)
 	iconUp, _ := material.NewIcon(icons.AVVolumeUp)
 	iconDown, _ := material.NewIcon(icons.AVVolumeDown)
 	itemValue := item{
@@ -95,7 +93,6 @@ func (g *GoJoy) scrollerGauge(control func(i int)) *ScrollerGauge {
 		ColorBg:  "",
 		Position: 0,
 		Cursor:   0,
-		Icon:     *iconGrab,
 		Do: func(n interface{}) {
 			itemValue.doSlide(n.(int))
 		},

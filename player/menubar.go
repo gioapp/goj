@@ -1,7 +1,6 @@
 package player
 
 import (
-	"fmt"
 	"gioui.org/layout"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
@@ -55,12 +54,14 @@ func (g *GoJoy) MenuBarLayout(gtx *layout.Context, th *material.Theme, ly *layou
 				//} else if m.player.state == Stopped {
 				//	m.player.songPos = 0
 				//}
-				i, err := playSong(g.Playing)
+				err := g.Playing.getSong()
 				if err != nil {
 				}
-				g.seek.Value = i
-				th.Caption(fmt.Sprint(i)).Layout(gtx)
-				fmt.Println("addad", i)
+				g.Playing.playSong()
+
+				g.seek.Value = g.Playing.TrackTotal
+				//th.Caption(fmt.Sprint(i)).Layout(gtx)
+				//fmt.Println("addad", i)
 
 			})),
 			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Stop", g.Menu.Stop, func() {})),

@@ -56,7 +56,7 @@ func LoadPlaylist() *Playlist {
 				if err != nil {
 					// Handle error
 				}
-				track.Image = loadedImage
+				track.CoverImage = loadedImage
 			}
 			track.Artist = metadata.Artist()
 			track.Title = metadata.Title()

@@ -20,12 +20,11 @@ var volume = &effects.Volume{
 	Base: 2,
 }
 
-func playSong(input *Track) (int, error) {
+func (input *Track) getSong() error {
 	f, err := os.Open(input.Path)
 	if err != nil {
-		return 0, err
+		return err
 	}
-
 	switch fileExt := filepath.Ext(input.Path); fileExt {
 	case ".mp3":
 		s, format, err = mp3.Decode(f)
@@ -35,13 +34,25 @@ func playSong(input *Track) (int, error) {
 		s, format, err = flac.Decode(f)
 	}
 	if err != nil {
-		return 0, err
+		return err
 	}
+
+	//wr, err := wavreader.New(f)
+	//if err != nil {
+	//}
+	//input.w = wr
+	//input.processWav()
+
+	return err
+}
+
+func (input *Track) playSong() {
 	volume.Streamer = s
 	mainCtrl = &beep.Ctrl{Streamer: volume}
 	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
 	speaker.Play(mainCtrl)
-	return int(float32(s.Len()) / float32(format.SampleRate)), nil
+	input.TrackTotal = int(float32(s.Len()) / float32(format.SampleRate))
+	return
 }
 
 func pauseSong(state bool) {

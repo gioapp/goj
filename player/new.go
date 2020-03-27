@@ -77,9 +77,11 @@ func NewGoJoy() *GoJoy {
 
 	g.Context = layout.NewContext(g.Window.Queue())
 	g.Menu = g.MenuBar()
+
 	g.Playlist = LoadPlaylist()
 
 	g.seek = g.scrollerGauge(seek)
+	g.seek.body.CursorHeight = 64
 	g.volume = g.scrollerGauge(setVolue)
 	g.volume.Value = 100
 	//p, _ := NewPlayer(gojoy.Player.Playlist.Tracks, 0)

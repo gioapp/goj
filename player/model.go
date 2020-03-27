@@ -6,6 +6,7 @@ import (
 	"gioui.org/op/paint"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
+	"github.com/gioapp/goj/pkg/wavreader"
 	"image"
 )
 
@@ -49,16 +50,18 @@ type Layouts struct {
 }
 
 type Track struct {
-	Id          int
-	Filename    string
-	Artist      string
-	Title       string
-	Album       string
-	TrackNumber int
-	TrackTotal  int
-	Genre       string
-	Year        string
-	Image       image.Image
-	imgOp       paint.ImageOp
-	Path        string
+	w            *wavreader.Reader
+	im           *image.NRGBA
+	Id           int
+	Filename     string
+	Artist       string
+	Title        string
+	Album        string
+	TrackNumber  int
+	TrackTotal   int
+	Genre        string
+	Year         string
+	CoverImage   image.Image
+	CoverImageOp paint.ImageOp
+	Path         string
 }
