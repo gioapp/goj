@@ -4,8 +4,8 @@ import (
 	"gioui.org/io/pointer"
 	"gioui.org/layout"
 	"gioui.org/unit"
-	"gioui.org/widget"
-	"gioui.org/widget/material"
+	"github.com/gioapp/goj/pkg/gel"
+	"github.com/gioapp/goj/pkg/gelook"
 	"golang.org/x/exp/shiny/materialdesign/icons"
 	"image"
 )
@@ -45,9 +45,9 @@ type ScrollBarBody struct {
 }
 
 type ScrollerGaugeButton struct {
-	icon         *material.Icon
-	button       material.IconButton
-	widgetButton *widget.Button
+	icon         *gelook.DuoUIicon
+	button       gelook.IconButton
+	widgetButton *gel.Button
 	Height       float32
 	iconColor    string
 	iconBgColor  string
@@ -60,15 +60,15 @@ type ScrollerGaugeButton struct {
 }
 
 func (g *GoJoy) scrollerGauge(control func(i int)) *ScrollerGauge {
-	iconUp, _ := material.NewIcon(icons.AVVolumeUp)
-	iconDown, _ := material.NewIcon(icons.AVVolumeDown)
+	iconUp, _ := gelook.NewDuoUIicon(icons.AVVolumeUp)
+	iconDown, _ := gelook.NewDuoUIicon(icons.AVVolumeDown)
 	itemValue := item{
 		i: 0,
 	}
 	up := &ScrollerGaugeButton{
 		icon:         iconUp,
 		button:       g.Theme.IconButton(iconUp),
-		widgetButton: new(widget.Button),
+		widgetButton: new(gel.Button),
 		Height:       16,
 		iconColor:    "ff445588",
 		iconBgColor:  "ff882266",
@@ -82,7 +82,7 @@ func (g *GoJoy) scrollerGauge(control func(i int)) *ScrollerGauge {
 	down := &ScrollerGaugeButton{
 		icon:         iconUp,
 		button:       g.Theme.IconButton(iconDown),
-		widgetButton: new(widget.Button),
+		widgetButton: new(gel.Button),
 		Height:       16,
 		iconSize:     16,
 		iconColor:    "ff445588",
@@ -112,7 +112,7 @@ func (g *GoJoy) scrollerGauge(control func(i int)) *ScrollerGauge {
 		down: down,
 	}
 }
-func (s *ScrollerGaugeButton) ScrollerGaugeButton() *material.IconButton {
+func (s *ScrollerGaugeButton) ScrollerGaugeButton() *gelook.IconButton {
 	button := s.button
 	button.Inset.Top = unit.Dp(0)
 	button.Inset.Bottom = unit.Dp(0)

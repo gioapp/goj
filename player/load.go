@@ -2,8 +2,8 @@ package player
 
 import (
 	"bytes"
-	"gioui.org/widget"
 	"github.com/bogem/id3v2"
+	"github.com/gioapp/goj/pkg/gel"
 	"github.com/mitchellh/go-homedir"
 	"image/jpeg"
 	"log"
@@ -27,7 +27,7 @@ func LoadPlaylist() *Playlist {
 		log.Fatal("Can't get song list")
 	}
 	tracks := make(map[int]Track)
-	buttons := make(map[int]*widget.Button)
+	buttons := make(map[int]*gel.Button)
 
 	for trackNum, fileName := range fileList {
 		currentFile, err := os.Open(fileName)
@@ -65,7 +65,7 @@ func LoadPlaylist() *Playlist {
 			track.Year = metadata.Year()
 
 			tracks[track.Id] = track
-			buttons[track.Id] = new(widget.Button)
+			buttons[track.Id] = new(gel.Button)
 		}
 		currentFile.Close()
 	}

@@ -4,8 +4,8 @@ import (
 	"gioui.org/app"
 	"gioui.org/layout"
 	"gioui.org/op/paint"
-	"gioui.org/widget"
-	"gioui.org/widget/material"
+	"github.com/gioapp/goj/pkg/gel"
+	"github.com/gioapp/goj/pkg/gelook"
 	"github.com/gioapp/goj/pkg/wavreader"
 	"image"
 )
@@ -13,29 +13,28 @@ import (
 type GoJoy struct {
 	Window   *app.Window
 	Context  *layout.Context
-	Theme    *material.Theme
+	Theme    *gelook.DuoUItheme
 	Menu     *MenuBar
 	Layouts  *Layouts
 	Playlist *Playlist
 	Playing  *Track
 	infoList []string
-	seek     *ScrollerGauge
-	volume   *ScrollerGauge
-	//songs     []Track
-	//songNames []string
-	songNum  int
-	songSel  int
-	songLen  int
+	trackNum int
+	trackSel int
+	trackPos int
+	trackLen int
 	OnSelect selectCallback
 	OnPause  pauseCallback
 	OnSeek   seekCallback
 	OnVolume volumeCallback
+	state    playerState
 
-	state playerState
+	seek   *ScrollerGauge
+	volume *ScrollerGauge
 }
 
 type Playlist struct {
-	Buttons map[int]*widget.Button
+	Buttons map[int]*gel.Button
 	Tracks  map[int]Track
 }
 type Layouts struct {

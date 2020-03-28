@@ -5,7 +5,7 @@ import (
 	"gioui.org/font/gofont"
 	"gioui.org/layout"
 	"gioui.org/unit"
-	"gioui.org/widget/material"
+	"github.com/gioapp/goj/pkg/gelook"
 )
 
 func NewGoJoy() *GoJoy {
@@ -46,23 +46,20 @@ func NewGoJoy() *GoJoy {
 			app.Size(unit.Dp(400), unit.Dp(800)),
 			app.Title("ParallelCoin"),
 		),
-		Theme: material.NewTheme(),
+		Theme: gelook.NewDuoUItheme(),
 		//Playlist: play.New(),
 
 		Layouts: layouts,
 	}
 
-	//userInterface, err := NewUi(songs, len(songDir))
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	//
 	//g.OnSelect = playSong
 	//g.OnPause = pauseSong
 	//g.OnSeek = seek
 	//g.OnVolume = setVolue
 
 	//g.songs = songList
-	g.songNum = -1
+	g.trackNum = -1
 
 	//g.songNames = make([]string, len(g.songs))
 	//for i, v := range g.songs {
@@ -84,8 +81,18 @@ func NewGoJoy() *GoJoy {
 	g.seek.body.CursorHeight = 64
 	g.volume = g.scrollerGauge(setVolue)
 	g.volume.Value = 100
+
+	g.setSong(0, false)
 	//p, _ := NewPlayer(gojoy.Player.Playlist.Tracks, 0)
 	//fmt.Println("tet",p)
 	//gojoy.Player = p
+
+	g.OnSelect = playSong
+	g.OnPause = pauseSong
+	g.OnSeek = seek
+	g.OnVolume = setVolue
+	g.Start()
+	defer g.Close()
+
 	return g
 }

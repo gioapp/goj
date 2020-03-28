@@ -17,6 +17,7 @@ import (
 func main() {
 	g := player.NewGoJoy()
 	//g.NewPlayer()
+
 	go func() {
 		for e := range g.Window.Events() {
 			if e, ok := e.(system.FrameEvent); ok {

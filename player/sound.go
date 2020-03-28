@@ -20,11 +20,12 @@ var volume = &effects.Volume{
 	Base: 2,
 }
 
-func (input *Track) getSong() error {
+func playSong(input Track) (int, error) {
 	f, err := os.Open(input.Path)
 	if err != nil {
-		return err
+		return 0, err
 	}
+
 	switch fileExt := filepath.Ext(input.Path); fileExt {
 	case ".mp3":
 		s, format, err = mp3.Decode(f)
@@ -34,25 +35,13 @@ func (input *Track) getSong() error {
 		s, format, err = flac.Decode(f)
 	}
 	if err != nil {
-		return err
+		return 0, err
 	}
-
-	//wr, err := wavreader.New(f)
-	//if err != nil {
-	//}
-	//input.w = wr
-	//input.processWav()
-
-	return err
-}
-
-func (input *Track) playSong() {
 	volume.Streamer = s
 	mainCtrl = &beep.Ctrl{Streamer: volume}
 	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
 	speaker.Play(mainCtrl)
-	input.TrackTotal = int(float32(s.Len()) / float32(format.SampleRate))
-	return
+	return int(float32(s.Len()) / float32(format.SampleRate)), nil
 }
 
 func pauseSong(state bool) {
@@ -65,7 +54,6 @@ func seek(pos int) {
 	speaker.Lock()
 	_ = s.Seek(pos * int(format.SampleRate))
 	speaker.Unlock()
-	//return err
 }
 
 func setVolue(percent int) {

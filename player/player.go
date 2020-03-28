@@ -10,13 +10,13 @@ const (
 
 type selectCallback func(Track) (int, error)
 type pauseCallback func(bool)
-type seekCallback func(int) error
+type seekCallback func(int)
 type volumeCallback func(int)
 
 func (g *GoJoy) playSong(number int) {
 	g.seek.Value = 0
 	var err error
-	g.songLen, err = g.OnSelect(g.Playlist.Tracks[number])
+	g.trackLen, err = g.OnSelect(g.Playlist.Tracks[number])
 	if err == nil {
 		g.state = Playing
 		g.renderSong()
@@ -25,16 +25,16 @@ func (g *GoJoy) playSong(number int) {
 }
 
 func (g *GoJoy) renderSong() {
-	if g.songSel != -1 {
-		//lyrics := g.Playlist.Tracks[g.songSel].Metadata["Lyrics"].(string)
-		//trackNum, _ := g.Playlist.Tracks[g.songSel].Metadata["Track"].(int)
+	if g.trackSel != -1 {
+		//lyrics := g.Playlist.Tracks[g.trackSel].Metadata["Lyrics"].(string)
+		//trackNum, _ := g.Playlist.Tracks[g.trackSel].Metadata["Track"].(int)
 		//g.infoList = []string{
-		//	"[Artist:](fg-green) " + g.Playlist.Tracks[g.songSel].Metadata["Artist"].(string),
-		//	"[Title:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Title"].(string),
-		//	"[Album:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Album"].(string),
+		//	"[Artist:](fg-green) " + g.Playlist.Tracks[g.trackSel].Metadata["Artist"].(string),
+		//	"[Title:](fg-green)  " + g.Playlist.Tracks[g.trackSel].Metadata["Title"].(string),
+		//	"[Album:](fg-green)  " + g.Playlist.Tracks[g.trackSel].Metadata["Album"].(string),
 		//	fmt.Sprintf("[Track:](fg-green)  %d", trackNum),
-		//	"[Genre:](fg-green)  " + g.Playlist.Tracks[g.songSel].Metadata["Genre"].(string),
-		//	fmt.Sprintf("[Year:](fg-green)   %d", g.Playlist.Tracks[g.songSel].Metadata["Year"].(string)),
+		//	"[Genre:](fg-green)  " + g.Playlist.Tracks[g.trackSel].Metadata["Genre"].(string),
+		//	fmt.Sprintf("[Year:](fg-green)   %d", g.Playlist.Tracks[g.trackSel].Metadata["Year"].(string)),
 		//}
 		//if lyrics != "" {
 		//	g.infoList = append(g.infoList, "Lyrics:  "+lyrics)
@@ -61,14 +61,14 @@ func (g *GoJoy) renderStatus() {
 //Song selection
 
 func (g *GoJoy) songDown() {
-	if g.songSel < len(g.Playlist.Tracks)-1 {
-		g.setSong(g.songSel+1, true)
+	if g.trackSel < len(g.Playlist.Tracks)-1 {
+		g.setSong(g.trackSel+1, true)
 	}
 }
 
 func (g *GoJoy) songUp() {
-	if g.songSel > 0 {
-		g.setSong(g.songSel-1, true)
+	if g.trackSel > 0 {
+		g.setSong(g.trackSel-1, true)
 	}
 }
 
@@ -96,9 +96,9 @@ func (g *GoJoy) setSong(num int, unset bool) {
 	//	skip += g.playList.Height - 2
 	//}
 	if unset {
-		//g.Playlist.Tracks[g.songSel] = g.songNames[g.songSel][1 : len(g.songNames[g.songSel])-20]
+		//g.Playlist.Tracks[g.trackSel] = g.songNames[g.trackSel][1 : len(g.songNames[g.trackSel])-20]
 	}
-	g.songSel = num
+	g.trackSel = num
 	//g.songNames[num] = fmt.Sprintf("[%s](fg-black,bg-green)", g.songNames[num])
 	//g.Playlist.Tracks = g.songNames[skip:]
 }

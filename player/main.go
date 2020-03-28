@@ -47,7 +47,6 @@ func (g *GoJoy) View() func() {
 									)
 								}),
 								layout.Flexed(1, func() {
-
 									layout.Flex{Axis: layout.Vertical}.Layout(g.Context,
 										layout.Rigid(func() {
 											g.Theme.Body1(g.Playing.Filename).Layout(g.Context)
@@ -100,9 +99,11 @@ func (g *GoJoy) View() func() {
 							)
 						}),
 						layout.Rigid(func() {
+							g.Context.Constraints.Height.Max = 64
 							g.seek.Layout(g.Context)
 						}),
 						layout.Rigid(func() {
+							g.Context.Constraints.Height.Max = 32
 							g.volume.Layout(g.Context)
 						}),
 					)
@@ -119,7 +120,9 @@ func (g *GoJoy) TrackList() func() {
 			g.Layouts.Playlist.Layout(g.Context, len(g.Playlist.Tracks), func(i int) {
 				track := g.Playlist.Tracks[i]
 				for g.Playlist.Buttons[track.Id].Clicked(g.Context) {
-					g.Playing = &track
+					//g.Playing = &track
+					g.trackNum = g.trackSel
+					g.playSong(g.trackNum)
 				}
 
 				b := g.Theme.Button(track.Filename)

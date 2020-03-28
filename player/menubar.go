@@ -1,74 +1,80 @@
 package player
 
 import (
+	"fmt"
 	"gioui.org/layout"
-	"gioui.org/widget"
-	"gioui.org/widget/material"
+	"github.com/gioapp/goj/pkg/gel"
+	"github.com/gioapp/goj/pkg/gelook"
 )
 
 var (
-	icon *material.Icon
+	icon *gelook.DuoUIicon
 )
 
 // MenuBar is the component that define the menu bar.
 type MenuBar struct {
-	PlayPause *widget.Button
-	Stop      *widget.Button
-	Forward   *widget.Button
-	Backward  *widget.Button
-	Next      *widget.Button
-	Back      *widget.Button
-	Quit      *widget.Button
+	PlayPause *gel.Button
+	Stop      *gel.Button
+	Forward   *gel.Button
+	Backward  *gel.Button
+	Next      *gel.Button
+	Back      *gel.Button
+	Quit      *gel.Button
 }
 
 func (g *GoJoy) MenuBar() *MenuBar {
 	return &MenuBar{
-		PlayPause: new(widget.Button),
-		Stop:      new(widget.Button),
-		Forward:   new(widget.Button),
-		Backward:  new(widget.Button),
-		Next:      new(widget.Button),
-		Back:      new(widget.Button),
-		Quit:      new(widget.Button),
+		PlayPause: new(gel.Button),
+		Stop:      new(gel.Button),
+		Forward:   new(gel.Button),
+		Backward:  new(gel.Button),
+		Next:      new(gel.Button),
+		Back:      new(gel.Button),
+		Quit:      new(gel.Button),
 	}
 }
 
-func (g *GoJoy) MenuBarLayout(gtx *layout.Context, th *material.Theme, ly *layout.Flex) func() {
+func (g *GoJoy) MenuBarLayout(gtx *layout.Context, th *gelook.DuoUItheme, ly *layout.Flex) func() {
 	return func() {
 		ly.Layout(gtx,
-			layout.Flexed(0.25, g.Menu.menuButton(gtx, th, "Play/Pause", g.Menu.PlayPause, func() {
-				//
-				//if m.player.state == Playing {
-				//	m.player.songPos++
-				//	if m.player.songLen != 0 {
-				//		m.player.scrollerGauge.Percent = int(float32(m.player.songPos) / float32(m.player.songLen) * 100)
-				//		m.player.scrollerGauge.Label = fmt.Sprintf("%d:%.2d / %d:%.2d", m.player.songPos/60, m.player.songPos%60, m.player.songLen/60, m.player.songLen%60)
-				//		if m.player.scrollerGauge.Percent >= 100 {
-				//			m.player.songNum++
-				//			if m.player.songNum >= len(m.player.Playlist.Tracks) {
-				//				m.player.songNum = 0
-				//			}
-				//			m.player.playSong(m.player.songNum)
-				//		}
-				//	}
-				//} else if m.player.state == Stopped {
-				//	m.player.songPos = 0
-				//}
-				err := g.Playing.getSong()
-				if err != nil {
+			layout.Flexed(0.25, g.Menu.menuButton(gtx, th, "Play/Pause", "Run", g.Menu.PlayPause, func() {
+				if g.state == Playing {
+					g.trackPos++
+					if g.trackLen != 0 {
+						g.seek.Value = int(float32(g.trackPos) / float32(g.trackLen) * 100)
+						g.seek.Label = fmt.Sprintf("%d:%.2d / %d:%.2d", g.trackPos/60, g.trackPos%60, g.trackLen/60, g.trackLen%60)
+						if g.seek.Value >= 100 {
+							g.trackNum++
+							if g.trackNum >= len(g.Playlist.Tracks) {
+								g.trackNum = 0
+							}
+							g.playSong(g.trackNum)
+						}
+					}
+				} else if g.state == Stopped {
+					g.trackPos = 0
 				}
-				g.Playing.playSong()
 
-				g.seek.Value = g.Playing.TrackTotal
+				//
+				//err := g.getSong()
+				//if err != nil {
+				//}
+				//g.playSong()
+				//
+				//g.seek.Value = g.TrackTotal
+
 				//th.Caption(fmt.Sprint(i)).Layout(gtx)
 				//fmt.Println("addad", i)
 
 			})),
-			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Stop", g.Menu.Stop, func() {})),
-			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Backward", g.Menu.Backward, func() {})),
-			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Forward", g.Menu.Forward, func() {})),
-			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Back", g.Menu.Back, func() {})),
-			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Next", g.Menu.Next, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Stop", "Stop", g.Menu.Stop, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Backward", "Backward", g.Menu.Backward, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Forward", "Forward", g.Menu.Forward, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Back", "Back", g.Menu.Back, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Next", "Next", g.Menu.Next, func() {})),
+
+			//layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "SEND", "sendIcon", g.Menu.Next),
+
 		)
 		//iconPlay, _ := material.NewIcon(icons.AVPlayArrow)
 		//iconStop, _ := material.NewIcon(icons.AVStop)
@@ -77,13 +83,30 @@ func (g *GoJoy) MenuBarLayout(gtx *layout.Context, th *material.Theme, ly *layou
 	}
 }
 
-func (m *MenuBar) menuButton(gtx *layout.Context, th *material.Theme, label string, button *widget.Button, action func()) func() {
+//func (m *MenuBar) menuButton(gtx *layout.Context, th *gelook.DuoUItheme, label string, button *gel.Button, action func()) func() {
+func (m *MenuBar) menuButton(gtx *layout.Context, th *gelook.DuoUItheme, label, icon string, button *gel.Button, action func()) func() {
 	return func() {
+		//for button.Clicked(gtx) {
+		//	action()
+		//}
+		//b := th.Button(label)
+		//
+		//b.Layout(gtx, button)
+
+		menuItem := th.DuoUIbutton(th.Fonts["Secondary"],
+			label, th.Colors["Light"],
+			th.Colors["LightGrayII"],
+			th.Colors["LightGrayII"],
+			th.Colors["Dark"], icon,
+			th.Colors["Primary"],
+			24, 48, gtx.Constraints.Width.Max, 96, 0, 0, 0, 0,
+			//nav.TextSize, nav.IconSize,
+			//nav.Width, nav.Height,
+			//nav.PaddingVertical, nav.PaddingHorizontal, nav.PaddingVertical, nav.PaddingHorizontal,
+		)
 		for button.Clicked(gtx) {
 			action()
 		}
-		b := th.Button(label)
-
-		b.Layout(gtx, button)
+		menuItem.MenuLayout(gtx, button)
 	}
 }
