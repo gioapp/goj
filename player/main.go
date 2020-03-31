@@ -7,7 +7,6 @@ import (
 	"gioui.org/op/clip"
 	"gioui.org/op/paint"
 	"gioui.org/unit"
-	"golang.org/x/image/draw"
 	"image"
 	"image/color"
 )
@@ -15,125 +14,12 @@ import (
 func (g *GoJoy) View() func() {
 	return func() {
 		g.Layouts.Body.Layout(g.Context,
-			layout.Flexed(0.5, func() {
-				if g.Playing != nil {
-					g.Layouts.Track.Layout(g.Context,
-						layout.Flexed(1, func() {
-							g.Layouts.TrackInfo.Layout(g.Context,
-								layout.Rigid(func() {
-									layout.Flex{Axis: layout.Vertical}.Layout(g.Context,
-										layout.Rigid(func() {
-											g.Theme.H5("Filename: ").Layout(g.Context)
-										}),
-										layout.Rigid(func() {
-											g.Theme.H6("Artist: ").Layout(g.Context)
-										}),
-										layout.Rigid(func() {
-											g.Theme.H6("Title: ").Layout(g.Context)
-										}),
-										layout.Rigid(func() {
-
-											g.Theme.H6("Album: ").Layout(g.Context)
-										}),
-										layout.Rigid(func() {
-											g.Theme.H6("Track: ").Layout(g.Context)
-										}),
-										layout.Rigid(func() {
-											g.Theme.H6("Genre: ").Layout(g.Context)
-										}),
-										layout.Rigid(func() {
-											g.Theme.H6("Year: ").Layout(g.Context)
-										}),
-									)
-								}),
-								layout.Flexed(1, func() {
-									layout.Flex{Axis: layout.Vertical}.Layout(g.Context,
-										layout.Rigid(func() {
-											g.Theme.Body1(g.Playing.Filename).Layout(g.Context)
-										}),
-										layout.Rigid(func() {
-											if g.Playing.Artist != "" {
-												g.Theme.Body1(g.Playing.Artist).Layout(g.Context)
-											}
-										}),
-										layout.Rigid(func() {
-											if g.Playing.Title != "" {
-												g.Theme.Body1(g.Playing.Title).Layout(g.Context)
-											}
-										}),
-										layout.Rigid(func() {
-											if g.Playing.CoverImage != nil {
-												sz := g.Context.Constraints.Width.Min
-												if g.Playing.CoverImageOp.Size().X != sz {
-													img := image.NewRGBA(image.Rectangle{Max: image.Point{X: sz, Y: sz}})
-													draw.ApproxBiLinear.Scale(img, img.Bounds(), g.Playing.CoverImage, g.Playing.CoverImage.Bounds(), draw.Src, nil)
-													g.Playing.CoverImageOp = paint.NewImageOp(img)
-												}
-												img := g.Theme.Image(g.Playing.CoverImageOp)
-												img.Scale = float32(sz) / float32(g.Context.Px(unit.Dp(float32(sz))))
-												img.Layout(g.Context)
-											}
-										}),
-										layout.Rigid(func() {
-											if g.Playing.Album != "" {
-												g.Theme.Body1(g.Playing.Album).Layout(g.Context)
-											}
-										}),
-										layout.Rigid(func() {
-											if g.Playing.TrackNumber != 0 {
-												g.Theme.Body1(fmt.Sprint(g.Playing.TrackNumber)).Layout(g.Context)
-											}
-										}),
-										layout.Rigid(func() {
-											if g.Playing.Genre != "" {
-												g.Theme.Body1(g.Playing.Genre).Layout(g.Context)
-											}
-										}),
-										layout.Rigid(func() {
-											if g.Playing.Year != "" {
-												g.Theme.Body1(fmt.Sprint(g.Playing.Year)).Layout(g.Context)
-											}
-										}),
-									)
-								}),
-							)
-						}),
-						layout.Rigid(func() {
-							g.Context.Constraints.Height.Max = 64
-							g.seek.Layout(g.Context)
-						}),
-						layout.Rigid(func() {
-							g.Context.Constraints.Height.Max = 32
-							g.volume.Layout(g.Context)
-						}),
-					)
-				}
-			}),
+			layout.Flexed(0.5, g.Info()),
 			layout.Flexed(0.5, g.TrackList()),
 		)
 	}
 }
 
-func (g *GoJoy) TrackList() func() {
-	return func() {
-		if g.Playlist.Tracks != nil {
-			g.Layouts.Playlist.Layout(g.Context, len(g.Playlist.Tracks), func(i int) {
-				track := g.Playlist.Tracks[i]
-				for g.Playlist.Buttons[track.Id].Clicked(g.Context) {
-					//g.Playing = &track
-					g.trackNum = g.trackSel
-					g.playSong(g.trackNum)
-				}
-
-				b := g.Theme.Button(track.Filename)
-				b.Background = HexARGB("ffcfcf30")
-				b.Layout(g.Context, g.Playlist.Buttons[track.Id])
-
-				//fmt.Println(song.Path)
-			})
-		}
-	}
-}
 func DrawRectangle(gtx *layout.Context, w, h int, color color.RGBA, borderRadius [4]float32, inset unit.Value) {
 	in := layout.UniformInset(inset)
 	in.Layout(gtx, func() {

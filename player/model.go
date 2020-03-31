@@ -4,10 +4,13 @@ import (
 	"gioui.org/app"
 	"gioui.org/layout"
 	"gioui.org/op/paint"
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/effects"
 	"github.com/gioapp/goj/pkg/gel"
 	"github.com/gioapp/goj/pkg/gelook"
 	"github.com/gioapp/goj/pkg/wavreader"
 	"image"
+	"os"
 )
 
 type GoJoy struct {
@@ -29,13 +32,22 @@ type GoJoy struct {
 	OnVolume volumeCallback
 	state    playerState
 
-	seek   *ScrollerGauge
-	volume *ScrollerGauge
+	seekElement   *ScrollerGauge
+	volumeElement *ScrollerGauge
+	Sound         *Sound
+}
+type Sound struct {
+	supportedFormats []string
+	mainCtrl         *beep.Ctrl
+	s                beep.StreamSeekCloser
+	format           beep.Format
+	volume           *effects.Volume
 }
 
 type Playlist struct {
-	Buttons map[int]*gel.Button
-	Tracks  map[int]Track
+	TracksNumber int
+	Buttons      map[int]*gel.Button
+	Tracks       map[int]Track
 }
 type Layouts struct {
 	Main *layout.Flex
@@ -49,6 +61,7 @@ type Layouts struct {
 }
 
 type Track struct {
+	f            *os.File
 	w            *wavreader.Reader
 	im           *image.NRGBA
 	Id           int

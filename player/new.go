@@ -5,6 +5,7 @@ import (
 	"gioui.org/font/gofont"
 	"gioui.org/layout"
 	"gioui.org/unit"
+	"github.com/faiface/beep/effects"
 	"github.com/gioapp/goj/pkg/gelook"
 )
 
@@ -52,6 +53,13 @@ func NewGoJoy() *GoJoy {
 		Layouts: layouts,
 	}
 
+	s := &Sound{
+		supportedFormats: []string{".mp3", ".wav", ".flac"},
+		volume: &effects.Volume{
+			Base: 2,
+		},
+	}
+	g.Sound = s
 	//
 	//g.OnSelect = playSong
 	//g.OnPause = pauseSong
@@ -70,29 +78,28 @@ func NewGoJoy() *GoJoy {
 	//	}
 	//}
 	//g.Playlist.Tracks = g.songNames
-	g.setSong(0, false)
 
 	g.Context = layout.NewContext(g.Window.Queue())
 	g.Menu = g.MenuBar()
 
-	g.Playlist = LoadPlaylist()
+	g.Playlist = g.LoadPlaylist()
 
-	g.seek = g.scrollerGauge(seek)
-	g.seek.body.CursorHeight = 64
-	g.volume = g.scrollerGauge(setVolue)
-	g.volume.Value = 100
+	g.seekElement = g.scrollerGauge(g.seek)
+	g.seekElement.body.CursorHeight = 64
+	g.volumeElement = g.scrollerGauge(g.setVolue)
+	g.volumeElement.Value = 100
 
 	g.setSong(0, false)
 	//p, _ := NewPlayer(gojoy.Player.Playlist.Tracks, 0)
 	//fmt.Println("tet",p)
 	//gojoy.Player = p
 
-	g.OnSelect = playSong
-	g.OnPause = pauseSong
-	g.OnSeek = seek
-	g.OnVolume = setVolue
-	g.Start()
-	defer g.Close()
+	g.OnSelect = g.playSong
+	g.OnPause = g.pauseSong
+	g.OnSeek = g.seek
+	g.OnVolume = g.setVolue
+	//g.Start()
+	//defer g.Close()
 
 	return g
 }

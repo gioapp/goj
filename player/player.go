@@ -1,5 +1,9 @@
 package player
 
+import (
+	"fmt"
+)
+
 type playerState int
 
 const (
@@ -13,16 +17,34 @@ type pauseCallback func(bool)
 type seekCallback func(int)
 type volumeCallback func(int)
 
-func (g *GoJoy) playSong(number int) {
-	g.seek.Value = 0
-	var err error
-	g.trackLen, err = g.OnSelect(g.Playlist.Tracks[number])
-	if err == nil {
-		g.state = Playing
-		g.renderSong()
-		g.renderStatus()
-	}
-}
+//func (g *GoJoy) playSong() {
+//	g.seekElement.Value = 0
+//	var err error
+//
+//	f, err := os.Open(g.Playing.Path)
+//	if err != nil {
+//	}
+//	defer f.Close()
+//
+//	g.Playing.f = f
+//	wr, err := wavreader.New(f)
+//	if err != nil {
+//	}
+//
+//	g.Playing.w = wr
+//
+//
+//fmt.Println("sss",g.Playing.w)
+//	//g.Playing.processWav()
+//	g.trackLen, err = g.OnSelect(*g.Playing)
+//	fmt.Println("rPlaylistackNum",g.trackNum)
+//	if err == nil {
+//		g.state = Playing
+//
+//		g.renderSong()
+//		g.renderStatus()
+//	}
+//}
 
 func (g *GoJoy) renderSong() {
 	if g.trackSel != -1 {
@@ -45,16 +67,18 @@ func (g *GoJoy) renderSong() {
 }
 
 func (g *GoJoy) renderStatus() {
-	//var status string
-	//switch g.state {
-	//case Playing:
-	//	status = "[(Playing)](fg-black,bg-green)"
-	//case Paused:
-	//	status = "[(Paused)](fg-black,bg-yellow)"
-	//case Stopped:
-	//	status = "[(Stopped)](fg-black,bg-red)"
-	//}
-	//g.scrollerGauge.BorderLabel = status
+	var status string
+	switch g.state {
+	case Playing:
+		status = "[(Playing)](fg-black,bg-green)"
+	case Paused:
+		status = "[(Paused)](fg-black,bg-yellow)"
+	case Stopped:
+		status = "[(Stopped)](fg-black,bg-red)"
+	}
+	g.seekElement.Label = status
+
+	fmt.Println("Status:", g.seekElement.Label)
 
 }
 
@@ -73,30 +97,30 @@ func (g *GoJoy) songUp() {
 }
 
 func (g *GoJoy) volumeUp() {
-	if g.volume.Value < 100 {
-		g.volume.Value += 5
+	if g.volumeElement.Value < 100 {
+		g.volumeElement.Value += 5
 	}
 	//g.volumeGauge.Percent = g.volume
-	g.OnVolume(g.volume.Value)
+	g.OnVolume(g.volumeElement.Value)
 
 }
 
 func (g *GoJoy) volumeDown() {
-	if g.volume.Value > 0 {
-		g.volume.Value -= 5
+	if g.volumeElement.Value > 0 {
+		g.volumeElement.Value -= 5
 	}
 	//g.volumeGauge.Percent = g.volume
-	g.OnVolume(g.volume.Value)
+	g.OnVolume(g.volumeElement.Value)
 
 }
 
 func (g *GoJoy) setSong(num int, unset bool) {
-	//skip := 0
-	//for num-skip >= g.playList.Height-2 {
-	//	skip += g.playList.Height - 2
-	//}
+	skip := 0
+	for num-skip >= g.Playlist.TracksNumber-2 {
+		skip += g.Playlist.TracksNumber - 2
+	}
 	if unset {
-		//g.Playlist.Tracks[g.trackSel] = g.songNames[g.trackSel][1 : len(g.songNames[g.trackSel])-20]
+		//g.Playlist.Tracks[g.trackSel] = g.Playlist.Tracks[g.trackSel][1 : len(g.Playlist.Tracks[g.trackSel])-20]
 	}
 	g.trackSel = num
 	//g.songNames[num] = fmt.Sprintf("[%s](fg-black,bg-green)", g.songNames[num])

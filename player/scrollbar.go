@@ -1,8 +1,10 @@
 package player
 
 import (
+	"gioui.org/f32"
 	"gioui.org/io/pointer"
 	"gioui.org/layout"
+	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"github.com/gioapp/goj/pkg/gel"
 	"github.com/gioapp/goj/pkg/gelook"
@@ -37,6 +39,8 @@ type ScrollBarBody struct {
 	pressed      bool
 	Do           func(interface{})
 	ColorBg      string
+	BgImage      image.Image
+	BgImageOp    paint.ImageOp
 	Position     float32
 	Cursor       float32
 	OperateValue interface{}
@@ -135,6 +139,7 @@ func (s *ScrollerGauge) Layout(gtx *layout.Context) {
 			s.up.ScrollerGaugeButton().Layout(gtx, s.up.widgetButton)
 		}),
 		layout.Flexed(1, func() {
+
 			s.bodyLayout(gtx)
 		}),
 		layout.Rigid(func() {
@@ -184,6 +189,32 @@ func (s *ScrollerGauge) bodyLayout(gtx *layout.Context) {
 		colorBorder = HexARGB("ff303030")
 		border = unit.Dp(0)
 	}
+
+	//////
+
+	//sz := gtx.Constraints.Width.Min
+	//if s.body.BgImageOp.Size().X != sz {
+	//	imgRender := image.NewRGBA(image.Rectangle{Max: image.Point{X: sz, Y: sz}})
+	//	draw.ApproxBiLinear.Scale(imgRender,
+	//		imgRender.Bounds(),
+	//		s.body.BgImage,
+	//		s.body.BgImage.Bounds(),
+	//		draw.Src, nil)
+	//	s.body.BgImageOp = paint.NewImageOp(imgRender)
+	//}
+	//size := s.body.BgImageOp.Size()
+	//wf, hf := float32(size.X), float32(size.Y)
+	//w, h := gtx.Px(unit.Dp(wf*160 / 72)), gtx.Px(unit.Dp(hf*160 / 72))
+	//d := image.Point{X: cs.Width.Constrain(w), Y: cs.Height.Constrain(h)}
+	//var so op.StackOp
+	//so.Push(gtx.Ops)
+	//clip.Rect{Rect: f32.Rectangle{Max: toPointF(d)}}.Op(gtx.Ops).Add(gtx.Ops)
+	//s.body.BgImageOp.Add(gtx.Ops)
+	//paint.PaintOp{Rect: f32.Rectangle{Max: f32.Point{X: float32(w), Y: float32(h)}}}.Add(gtx.Ops)
+	//so.Pop()
+	//gtx.Dimensions = layout.Dimensions{Size: d}
+
+	/////
 	pointer.Rect(
 		image.Rectangle{Max: image.Point{X: cs.Width.Max, Y: cs.Height.Max}},
 	).Add(gtx.Ops)
@@ -203,4 +234,8 @@ func (s *ScrollerGauge) bodyLayout(gtx *layout.Context) {
 	})
 	//fmt.Println("Cursor", s.body.Cursor)
 	//fmt.Println("Position", s.body.Position)
+}
+
+func toPointF(p image.Point) f32.Point {
+	return f32.Point{X: float32(p.X), Y: float32(p.Y)}
 }

@@ -1,66 +1,80 @@
 package player
 
 import (
+	"fmt"
 	"github.com/faiface/beep"
-	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/flac"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
+	"github.com/gioapp/goj/pkg/wavreader"
 	"os"
 	"path/filepath"
 	"time"
 )
 
-var supportedFormats = []string{".mp3", ".wav", ".flac"}
-var mainCtrl *beep.Ctrl
-var s beep.StreamSeekCloser
-var format beep.Format
-var volume = &effects.Volume{
-	Base: 2,
-}
+func (g *GoJoy) playSong() (int, error) {
+	g.seekElement.Value = 0
+	var err error
 
-func playSong(input Track) (int, error) {
-	f, err := os.Open(input.Path)
+	f, err := os.Open(g.Playing.Path)
 	if err != nil {
-		return 0, err
+	}
+	defer f.Close()
+
+	g.Playing.f = f
+	wr, err := wavreader.New(f)
+	if err != nil {
 	}
 
-	switch fileExt := filepath.Ext(input.Path); fileExt {
+	g.Playing.w = wr
+
+	fmt.Println("sss", g.Playing.w)
+	//g.Playing.processWav()
+	g.trackLen, err = g.OnSelect(*g.Playing)
+	fmt.Println("rPlaylistackNum", g.trackNum)
+	if err == nil {
+		g.state = Playing
+
+		g.renderSong()
+		g.renderStatus()
+	}
+
+	switch fileExt := filepath.Ext(g.Playing.Path); fileExt {
 	case ".mp3":
-		s, format, err = mp3.Decode(f)
+		g.Sound.s, g.Sound.format, err = mp3.Decode(g.Playing.f)
 	case ".wav":
-		s, format, err = wav.Decode(f)
+		g.Sound.s, g.Sound.format, err = wav.Decode(g.Playing.f)
 	case ".flac":
-		s, format, err = flac.Decode(f)
+		g.Sound.s, g.Sound.format, err = flac.Decode(g.Playing.f)
 	}
 	if err != nil {
 		return 0, err
 	}
-	volume.Streamer = s
-	mainCtrl = &beep.Ctrl{Streamer: volume}
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
-	speaker.Play(mainCtrl)
-	return int(float32(s.Len()) / float32(format.SampleRate)), nil
+	g.Sound.volume.Streamer = g.Sound.s
+	g.Sound.mainCtrl = &beep.Ctrl{Streamer: g.Sound.volume}
+	speaker.Init(g.Sound.format.SampleRate, g.Sound.format.SampleRate.N(time.Second/10))
+	speaker.Play(g.Sound.mainCtrl)
+	return int(float32(g.Sound.s.Len()) / float32(g.Sound.format.SampleRate)), nil
 }
 
-func pauseSong(state bool) {
+func (g *GoJoy) pauseSong(state bool) {
 	speaker.Lock()
-	mainCtrl.Paused = state
+	g.Sound.mainCtrl.Paused = state
 	speaker.Unlock()
 }
 
-func seek(pos int) {
+func (g *GoJoy) seek(pos int) {
 	speaker.Lock()
-	_ = s.Seek(pos * int(format.SampleRate))
+	_ = g.Sound.s.Seek(pos * int(g.Sound.format.SampleRate))
 	speaker.Unlock()
 }
 
-func setVolue(percent int) {
+func (g *GoJoy) setVolue(percent int) {
 	if percent == 0 {
-		volume.Silent = true
+		g.Sound.volume.Silent = true
 	} else {
-		volume.Silent = false
-		volume.Volume = -float64(100-percent) / 100.0 * 5
+		g.Sound.volume.Silent = false
+		g.Sound.volume.Volume = -float64(100-percent) / 100.0 * 5
 	}
 }

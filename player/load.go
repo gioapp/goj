@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-func LoadPlaylist() *Playlist {
+func (g *GoJoy) LoadPlaylist() *Playlist {
 	var songDir string
 	var err error
 	if len(os.Args) > 1 {
@@ -22,7 +22,7 @@ func LoadPlaylist() *Playlist {
 			log.Fatal("Can't open ~/Music directory")
 		}
 	}
-	fileList, err := getSongList(songDir)
+	fileList, err := g.getSongList(songDir)
 	if err != nil {
 		log.Fatal("Can't get song list")
 	}
@@ -63,7 +63,6 @@ func LoadPlaylist() *Playlist {
 			track.Album = metadata.Album()
 			track.Genre = metadata.Genre()
 			track.Year = metadata.Year()
-
 			tracks[track.Id] = track
 			buttons[track.Id] = new(gel.Button)
 		}
@@ -74,7 +73,8 @@ func LoadPlaylist() *Playlist {
 	}
 
 	return &Playlist{
-		Buttons: buttons,
-		Tracks:  tracks,
+		Buttons:      buttons,
+		TracksNumber: len(tracks),
+		Tracks:       tracks,
 	}
 }

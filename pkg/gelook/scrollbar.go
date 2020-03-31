@@ -42,13 +42,12 @@ func (t *DuoUItheme) ScrollBar() *ScrollBar {
 		down:         t.IconButton(t.Icons["Down"]),
 		container:    t.DuoUIcontainer(0, t.Colors["Light"]),
 	}
-	scrollbar.container.PaddingLeft = 16
+	scrollbar.container.PaddingLeft = 0
 	return scrollbar
 }
 
 func (p *DuoUIpanel) ScrollBarLayout(gtx *layout.Context, panel *gel.Panel) {
-	p.ScrollBar.container.Layout(gtx, layout.Center, func() {
-
+	p.ScrollBar.container.Layout(gtx, layout.NW, func() {
 		layout.Flex{
 			Axis: layout.Vertical,
 			//Alignment:layout.Middle,

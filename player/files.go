@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func getSongList(input string) ([]string, error) {
+func (g *GoJoy) getSongList(input string) ([]string, error) {
 
 	result := make([]string, 0)
 	addPath := func(path string, info os.FileInfo, err error) error {
@@ -13,7 +13,7 @@ func getSongList(input string) ([]string, error) {
 			return err
 		}
 
-		if !info.IsDir() && Contains(supportedFormats, filepath.Ext(path)) {
+		if !info.IsDir() && Contains(g.Sound.supportedFormats, filepath.Ext(path)) {
 			result = append(result, path)
 		}
 		return nil

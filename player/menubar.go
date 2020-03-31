@@ -1,7 +1,6 @@
 package player
 
 import (
-	"fmt"
 	"gioui.org/layout"
 	"github.com/gioapp/goj/pkg/gel"
 	"github.com/gioapp/goj/pkg/gelook"
@@ -38,38 +37,41 @@ func (g *GoJoy) MenuBarLayout(gtx *layout.Context, th *gelook.DuoUItheme, ly *la
 	return func() {
 		ly.Layout(gtx,
 			layout.Flexed(0.25, g.Menu.menuButton(gtx, th, "Play/Pause", "Run", g.Menu.PlayPause, func() {
-				if g.state == Playing {
-					g.trackPos++
-					if g.trackLen != 0 {
-						g.seek.Value = int(float32(g.trackPos) / float32(g.trackLen) * 100)
-						g.seek.Label = fmt.Sprintf("%d:%.2d / %d:%.2d", g.trackPos/60, g.trackPos%60, g.trackLen/60, g.trackLen%60)
-						if g.seek.Value >= 100 {
-							g.trackNum++
-							if g.trackNum >= len(g.Playlist.Tracks) {
-								g.trackNum = 0
-							}
-							g.playSong(g.trackNum)
-						}
+				if g.trackNum != -1 {
+					if g.state == Playing {
+						g.OnPause(true)
+						g.state = Paused
+					} else {
+						g.OnPause(false)
+						g.state = Playing
+
 					}
-				} else if g.state == Stopped {
-					g.trackPos = 0
+					g.renderStatus()
 				}
-
-				//
-				//err := g.getSong()
-				//if err != nil {
-				//}
-				//g.playSong()
-				//
-				//g.seek.Value = g.TrackTotal
-
-				//th.Caption(fmt.Sprint(i)).Layout(gtx)
-				//fmt.Println("addad", i)
-
 			})),
-			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Stop", "Stop", g.Menu.Stop, func() {})),
-			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Backward", "Backward", g.Menu.Backward, func() {})),
-			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Forward", "Forward", g.Menu.Forward, func() {})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Stop", "Stop", g.Menu.Stop, func() {
+				g.playSong()
+				g.OnPause(true)
+				g.state = Stopped
+				g.seek.Value = 0
+				g.seek.Label = "0:00 / 0:00"
+				g.renderStatus()
+			})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Backward", "Backward", g.Menu.Backward, func() {
+				if g.trackNum != -1 {
+					g.trackPos -= 10
+					if g.trackPos < 0 {
+						g.trackPos = 0
+					}
+					g.OnSeek(g.trackPos)
+				}
+			})),
+			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Forward", "Forward", g.Menu.Forward, func() {
+				if g.trackNum != -1 {
+					g.trackPos += 10
+					g.OnSeek(g.trackPos)
+				}
+			})),
 			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Back", "Back", g.Menu.Back, func() {})),
 			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Next", "Next", g.Menu.Next, func() {})),
 
