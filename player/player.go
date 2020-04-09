@@ -2,6 +2,8 @@ package player
 
 import (
 	"fmt"
+	"github.com/gioapp/goj/pkg/wavreader"
+	"os"
 )
 
 type playerState int
@@ -17,34 +19,33 @@ type pauseCallback func(bool)
 type seekCallback func(int)
 type volumeCallback func(int)
 
-//func (g *GoJoy) playSong() {
-//	g.seekElement.Value = 0
-//	var err error
-//
-//	f, err := os.Open(g.Playing.Path)
-//	if err != nil {
-//	}
-//	defer f.Close()
-//
-//	g.Playing.f = f
-//	wr, err := wavreader.New(f)
-//	if err != nil {
-//	}
-//
-//	g.Playing.w = wr
-//
-//
-//fmt.Println("sss",g.Playing.w)
-//	//g.Playing.processWav()
-//	g.trackLen, err = g.OnSelect(*g.Playing)
-//	fmt.Println("rPlaylistackNum",g.trackNum)
-//	if err == nil {
-//		g.state = Playing
-//
-//		g.renderSong()
-//		g.renderStatus()
-//	}
-//}
+func (g *GoJoy) playSong() {
+	g.seekElement.Value = 0
+	var err error
+
+	f, err := os.Open(g.Playing.Path)
+	if err != nil {
+	}
+	//defer f.Close()
+
+	g.Playing.f = f
+	wr, err := wavreader.New(f)
+	if err != nil {
+	}
+
+	g.Playing.w = wr
+
+	fmt.Println("sss", g.Playing.w)
+
+	g.trackLen, err = g.OnSelect(*g.Playing)
+	fmt.Println("rPlaylistackNum", g.trackNum)
+	if err == nil {
+		g.state = Playing
+
+		g.renderSong()
+		g.renderStatus()
+	}
+}
 
 func (g *GoJoy) renderSong() {
 	if g.trackSel != -1 {

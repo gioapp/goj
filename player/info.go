@@ -116,12 +116,23 @@ func (g *GoJoy) Info() func() {
 					})
 				}),
 				layout.Rigid(func() {
+					//cs := g.Context.Constraints
+					//sz := g.Context.Constraints.Width.Min
+					if g.Playing.wavImageOp.Size().X != 300 {
+
+						g.Playing.wavImageOp = paint.NewImageOp(g.loadWav(300, 64, 1.6))
+					}
+					imgRender := g.Theme.Image(g.Playing.wavImageOp)
+					imgRender.Scale = float32(300) / float32(g.Context.Px(unit.Dp(float32(300))))
+					imgRender.Layout(g.Context)
+				}),
+				layout.Rigid(func() {
 					g.Context.Constraints.Height.Max = 64
-					g.seek.Layout(g.Context)
+					g.seekElement.Layout(g.Context)
 				}),
 				layout.Rigid(func() {
 					g.Context.Constraints.Height.Max = 32
-					g.volume.Layout(g.Context)
+					g.volumeElement.Layout(g.Context)
 				}),
 			)
 		}

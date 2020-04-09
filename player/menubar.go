@@ -2,8 +2,8 @@ package player
 
 import (
 	"gioui.org/layout"
-	"github.com/gioapp/goj/pkg/gel"
-	"github.com/gioapp/goj/pkg/gelook"
+	"github.com/gioapp/gel"
+	"github.com/gioapp/gelook"
 )
 
 var (
@@ -53,8 +53,8 @@ func (g *GoJoy) MenuBarLayout(gtx *layout.Context, th *gelook.DuoUItheme, ly *la
 				g.playSong()
 				g.OnPause(true)
 				g.state = Stopped
-				g.seek.Value = 0
-				g.seek.Label = "0:00 / 0:00"
+				g.seekElement.Value = 0
+				g.seekElement.Label = "0:00 / 0:00"
 				g.renderStatus()
 			})),
 			layout.Flexed(0.15, g.Menu.menuButton(gtx, th, "Backward", "Backward", g.Menu.Backward, func() {
@@ -95,20 +95,20 @@ func (m *MenuBar) menuButton(gtx *layout.Context, th *gelook.DuoUItheme, label, 
 		//
 		//b.Layout(gtx, button)
 
-		menuItem := th.DuoUIbutton(th.Fonts["Secondary"],
-			label, th.Colors["Light"],
-			th.Colors["LightGrayII"],
-			th.Colors["LightGrayII"],
-			th.Colors["Dark"], icon,
-			th.Colors["Primary"],
-			24, 48, gtx.Constraints.Width.Max, 96, 0, 0, 0, 0,
-			//nav.TextSize, nav.IconSize,
-			//nav.Width, nav.Height,
-			//nav.PaddingVertical, nav.PaddingHorizontal, nav.PaddingVertical, nav.PaddingHorizontal,
-		)
+		//menuItem := th.DuoUIbutton(th.Fonts["Secondary"],
+		//	label, th.Colors["Light"],
+		//	th.Colors["LightGrayII"],
+		//	th.Colors["LightGrayII"],
+		//	th.Colors["Dark"], icon,
+		//	th.Colors["Primary"],
+		//	24, 48, gtx.Constraints.Width.Max, 96, 0, 0, 0, 0,
+		//	//nav.TextSize, nav.IconSize,
+		//	//nav.Width, nav.Height,
+		//	//nav.PaddingVertical, nav.PaddingHorizontal, nav.PaddingVertical, nav.PaddingHorizontal,
+		//)
 		for button.Clicked(gtx) {
 			action()
 		}
-		menuItem.MenuLayout(gtx, button)
+		//menuItem.MenuLayout(gtx, button)
 	}
 }

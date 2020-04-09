@@ -3,7 +3,7 @@ package player
 import (
 	"bytes"
 	"github.com/bogem/id3v2"
-	"github.com/gioapp/goj/pkg/gel"
+	"github.com/gioapp/gel"
 	"github.com/mitchellh/go-homedir"
 	"image/jpeg"
 	"log"

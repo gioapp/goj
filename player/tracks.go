@@ -3,7 +3,7 @@ package player
 import (
 	"fmt"
 	"gioui.org/layout"
-	"github.com/gioapp/goj/pkg/gel"
+	"github.com/gioapp/gel"
 )
 
 var (
@@ -17,7 +17,7 @@ func (g *GoJoy) TrackList() func() {
 			tracksListPanelElement.PanelObject = g.Playlist.Tracks
 			tracksListPanelElement.PanelObjectsNumber = len(g.Playlist.Tracks)
 			tracksListPanel := g.Theme.DuoUIpanel()
-			tracksListPanel.ScrollBar = g.Theme.ScrollBar()
+			tracksListPanel.ScrollBar = g.Theme.ScrollBar(0)
 
 			tracksListPanel.Layout(g.Context, tracksListPanelElement, func(i int, in interface{}) {
 				//g.Layouts.Playlist.Layout(g.Context, len(g.Playlist.Tracks), func(i int) {
@@ -26,6 +26,7 @@ func (g *GoJoy) TrackList() func() {
 					g.Playing = &track
 					//g.setSong(g.trackNum, true)
 					//g.trackNum = g.trackSel
+
 					g.playSong()
 				}
 				b := g.Theme.DuoUIbutton("", "", "", "ff888888", "", "", "", "", 0, 0, 0, 0, 0, 0, 0, 0)

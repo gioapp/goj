@@ -6,8 +6,8 @@ import (
 	"gioui.org/op/paint"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/effects"
-	"github.com/gioapp/goj/pkg/gel"
-	"github.com/gioapp/goj/pkg/gelook"
+	"github.com/gioapp/gel"
+	"github.com/gioapp/gelook"
 	"github.com/gioapp/goj/pkg/wavreader"
 	"image"
 	"os"
@@ -61,9 +61,11 @@ type Layouts struct {
 }
 
 type Track struct {
-	f            *os.File
-	w            *wavreader.Reader
-	im           *image.NRGBA
+	f          *os.File
+	w          *wavreader.Reader
+	wavImage   *image.NRGBA
+	wavImageOp paint.ImageOp
+
 	Id           int
 	Filename     string
 	Artist       string

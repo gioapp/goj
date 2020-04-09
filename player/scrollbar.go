@@ -6,8 +6,8 @@ import (
 	"gioui.org/layout"
 	"gioui.org/op/paint"
 	"gioui.org/unit"
-	"github.com/gioapp/goj/pkg/gel"
-	"github.com/gioapp/goj/pkg/gelook"
+	"github.com/gioapp/gel"
+	"github.com/gioapp/gelook"
 	"golang.org/x/exp/shiny/materialdesign/icons"
 	"image"
 )

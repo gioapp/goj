@@ -6,7 +6,7 @@ import (
 	"gioui.org/layout"
 	"gioui.org/unit"
 	"github.com/faiface/beep/effects"
-	"github.com/gioapp/goj/pkg/gelook"
+	"github.com/gioapp/gelook"
 )
 
 func NewGoJoy() *GoJoy {
@@ -84,9 +84,9 @@ func NewGoJoy() *GoJoy {
 
 	g.Playlist = g.LoadPlaylist()
 
-	g.seekElement = g.scrollerGauge(g.seek)
+	g.seekElement = g.scrollerGauge(seek)
 	g.seekElement.body.CursorHeight = 64
-	g.volumeElement = g.scrollerGauge(g.setVolue)
+	g.volumeElement = g.scrollerGauge(setVolue)
 	g.volumeElement.Value = 100
 
 	g.setSong(0, false)
@@ -94,10 +94,10 @@ func NewGoJoy() *GoJoy {
 	//fmt.Println("tet",p)
 	//gojoy.Player = p
 
-	g.OnSelect = g.playSong
-	g.OnPause = g.pauseSong
-	g.OnSeek = g.seek
-	g.OnVolume = g.setVolue
+	g.OnSelect = playSong
+	g.OnPause = pauseSong
+	g.OnSeek = seek
+	g.OnVolume = setVolue
 	//g.Start()
 	//defer g.Close()
 
